@@ -1,0 +1,7 @@
+---
+# https://github.com/dev-sec/ansible-ssh-hardening
+network_ipv6_enable: yes
+ssh_allow_users: kube
+# otherwise ansible will put ListenAddress 0.0.0.0 into sshd_config
+# which does not work for ipv6
+ssh_listen_to: []

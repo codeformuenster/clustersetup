@@ -1,0 +1,34 @@
+---
+- name: "Set up passwordless sudo for user {{ users_username }}"
+  lineinfile:
+    dest: /etc/sudoers
+    state: present
+    regexp: "^%{{ users_username }}"
+    line: "{{ users_username }} ALL=(ALL) NOPASSWD:ALL"
+    validate: 'visudo -cf %s'
+  when: users_privileged|bool
+
+- name: "add {{ users_username }} user account"
+  user:
+    name: "{{ users_username }}"
+    create_home: yes
+    home: "/home/{{ users_username }}"
+    system: no
+    password: '*'
+    state: present
+    shell: /bin/bash
+
+- name: "read authorized keys for {{ users_username }} user account"
+  set_fact:
+    user_pubkey_list: "{{ lookup('file', item) }}"
+  register: user_pubkeys
+  loop: "{{ users_authorized_keys_paths | flatten(levels=1) }}"
+
+- set_fact:
+    user_authorized_keys_content: "{{ user_pubkeys.results | map(attribute='ansible_facts.user_pubkey_list') | join('\n') }}"
+
+- name: "set authorized_keys for {{ users_username }} user account"
+  authorized_key:
+    user: "{{ users_username }}"
+    key: "{{ user_authorized_keys_content }}"
+    exclusive: yes

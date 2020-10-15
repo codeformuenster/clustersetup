@@ -1,0 +1,15 @@
+---
+- name: Uninstall snapd
+  apt:
+    name: snapd
+    state: absent
+    purge: yes
+    autoclean: yes
+    autoremove: yes
+
+- name: Remove snap directories
+  file:
+    state: absent
+    path: "{{ item }}"
+  loop:
+    - /var/cache/snapd

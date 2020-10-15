@@ -1,0 +1,38 @@
+---
+- name: set TZ env variable in /etc/environment
+  lineinfile:
+    name: /etc/environment
+    line: TZ=:/etc/localtime
+
+- name: install some basic packages
+  apt:
+    name:
+      - htop
+      - vim
+      - tmux
+      - jq
+      - ncdu
+      - pigz
+      - sudo
+      - pv
+      - unzip
+      - curl
+      - wget
+      - haveged
+      - qemu-guest-agent
+    state: present
+    update_cache: yes
+
+- name: "Set hostname on server to {{ inventory_hostname }}"
+  hostname:
+    name: "{{ inventory_hostname }}"
+
+- name: "Fix /etc/hosts"
+  lineinfile:
+    dest: /etc/hosts
+    state: present
+    regexp: "^127\\.0\\.1\\.1"
+    line: "127.0.1.1 {{ inventory_hostname }}"
+
+- include: remove-snap.yaml
+- include: motd.yaml

@@ -1,0 +1,6 @@
+---
+# oefenweb.fail2ban
+# https://github.com/Oefenweb/ansible-fail2ban
+fail2ban_services:
+- name: sshd
+  port: 22

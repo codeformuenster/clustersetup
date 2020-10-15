@@ -1,0 +1,5 @@
+users_username: kube
+users_authorized_keys_paths:
+  - "{{ playbook_dir }}/keys/kube-vsh.pub"
+
+users_privileged: true

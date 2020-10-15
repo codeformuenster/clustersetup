@@ -1,0 +1,4 @@
+- src: dev-sec.ssh-hardening
+  version: 9.7.0
+- src: oefenweb.fail2ban
+  version: v3.3.17

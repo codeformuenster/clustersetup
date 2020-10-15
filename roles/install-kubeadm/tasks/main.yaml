@@ -1,0 +1,86 @@
+---
+- name: Install package dependencies for docker and kubeadm
+  apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - software-properties-common
+      - arptables
+      - ebtables
+      - gnupg2
+      - openssl
+    state: present
+    update_cache: yes
+
+- name: Use legacy iptables for kubernetes
+  alternatives:
+    name: "{{ item }}"
+    path: /usr/sbin/{{ item }}-legacy
+  with_items:
+    - "iptables"
+    - "ip6tables"
+    - "arptables"
+    - "ebtables"
+
+
+- name: Add GPG keys for docker and kubernetes
+  apt_key:
+    url: "{{ item }}"
+  with_items:
+    - "https://download.docker.com/linux/debian/gpg"
+    - "https://packages.cloud.google.com/apt/doc/apt-key.gpg"
+
+- name: Add package repositories for docker and kubernetes
+  apt_repository:
+    repo: "{{ item }}"
+  with_items:
+    - "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
+    - "deb https://apt.kubernetes.io/ kubernetes-xenial main"
+
+- name: Refresh package repositories
+  apt:
+    update_cache: yes
+
+- name: Install docker, kubelet, kubeadm and kubectl
+  apt:
+    name: ['docker-ce=5:19.03.11~3-0~ubuntu-focal', 'kubelet', 'kubeadm', 'kubectl']
+
+- name: Set up docker stuff
+  shell: |
+    cat > /etc/docker/daemon.json <<EOF
+    {
+      "exec-opts": ["native.cgroupdriver=systemd"],
+      "log-driver": "json-file",
+      "log-opts": {
+        "max-size": "100m"
+      },
+      "storage-driver": "overlay2"
+    }
+    EOF
+
+- name: Enable docker and kubelet systemd units
+  become: yes
+  systemd:
+    state: started
+    name: "{{ item }}"
+    enabled: yes
+  with_items:
+    - "docker"
+    - "kubelet"
+
+- name: Ensuring that the br_netfilter kernel module is loaded.
+  modprobe:
+    name: br_netfilter
+    state: present
+
+- name: Configuring iptables to route packets across the network bridge.
+  become: yes
+  sysctl:
+    name: "{{ entry }}"
+    value: 1
+    sysctl_set: yes
+  loop:
+    - net.bridge.bridge-nf-call-ip6tables
+    - net.bridge.bridge-nf-call-iptables
+  loop_control:
+    loop_var: entry
