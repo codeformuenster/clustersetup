@@ -12,7 +12,7 @@ We're using Ubuntu 20.04 LTS as server OS. This document explains the installati
 - On your local machine, `xdotool` is really handy to enter passwords
 
 
-## Manual installation of the VM
+## Installation of the VM (preseed and manual)
 
 - Start the VM and open the VNC Console
 - Wait for PXE boot to load the network boot menu
@@ -20,8 +20,18 @@ We're using Ubuntu 20.04 LTS as server OS. This document explains the installati
     - "Linux Network Installs"
     - "Ubuntu"
     - "Ubuntu 20.04 LTS Focal Fossa"
-    - "Install"
 
+## Preseed
+
+Instead of selecting "Install", select "Specify preseed url..."
+
+Using `xdotool` you can enter `https://raw.githubusercontent.com/codeformuenster/clustersetup/main/docs/preseed.txt`.
+
+```
+sleep 1; xdotool type "https://raw.githubusercontent.com/codeformuenster/clustersetup/main/docs/preseed.txt"
+```
+
+Watch the machine install itself. Continue with [After installation](#after-installation).
 
 ## Manual installation steps
 
@@ -62,9 +72,10 @@ Select "Install" without specifying a preseed url
     - Add the VLAN tag of the network device (removed in the first step)
 - In the "Options" menu
     - Set "Boot order" to boot "Disk" first
+- Make sure Firewall is enabled & allows traffic on port 22
 - Start the VM
 - Open the VNC console
-- First Boot will take quite some time (Waiting for network which is not configured)
+- **First Boot will take quite some time (Waiting for network which is not configured)**
 - Esc maybe will show you some progress
 - If the only a cursor blinks in the top left corner
     - Send Ctrl + Alt + F1
@@ -72,7 +83,7 @@ Select "Install" without specifying a preseed url
 - Use username "kube" and the password from the installation routine to sign in
 - Execute `ip a`. Interface `ens18` will have a dynamic IPv6 address.
 
-## Set up network
+## Set up network & ssh pulic key authentication
 
 For these steps, you'll need the VMs: external IP (v4 & v6), netmasks, and gateways.
 

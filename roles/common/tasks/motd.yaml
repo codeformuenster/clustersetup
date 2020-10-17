@@ -5,6 +5,7 @@
     state: present
     regexp: "^ENABLED="
     line: "ENABLED=0"
+  ignore_errors: yes
 
 - name: Clear /var/cache/motd-news file
   copy:

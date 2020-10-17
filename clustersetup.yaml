@@ -5,16 +5,17 @@
   - name: install python 3
     raw: test -e /usr/bin/python3 -a -e /usr/bin/pip3 || (apt-get -y update && apt-get install -y python3-minimal python3-setuptools python3-pip)
     tags:
-    - [ never, initial_setup ]
+    - [ never, initial-setup ]
 
 - hosts: all
   roles:
   - role: common
-    tags: [ initial_setup ]
+    tags: [ initial-setup ]
   - role: user
-    tags: [ initial_setup ]
+    tags: [ initial-setup ]
   - dev-sec.ssh-hardening
   - oefenweb.fail2ban
   - disable-swap
-  - install-kubeadm
+  - role: install-kubeadm
+    tags: [ install-kubeadm ]
   # - bootstrap-nodes

@@ -5,6 +5,7 @@
       - apt-transport-https
       - ca-certificates
       - software-properties-common
+      - iptables
       - arptables
       - ebtables
       - gnupg2
@@ -22,6 +23,22 @@
     - "arptables"
     - "ebtables"
 
+- name: Load the br_netfilter kernel module
+  modprobe:
+    name: br_netfilter
+    state: present
+
+- name: Configure iptables to route packets across the network bridge
+  become: yes
+  sysctl:
+    name: "{{ entry }}"
+    value: "1"
+    sysctl_set: yes
+  loop:
+    - net.bridge.bridge-nf-call-ip6tables
+    - net.bridge.bridge-nf-call-iptables
+  loop_control:
+    loop_var: entry
 
 - name: Add GPG keys for docker and kubernetes
   apt_key:
@@ -67,20 +84,3 @@
   with_items:
     - "docker"
     - "kubelet"
-
-- name: Ensuring that the br_netfilter kernel module is loaded.
-  modprobe:
-    name: br_netfilter
-    state: present
-
-- name: Configuring iptables to route packets across the network bridge.
-  become: yes
-  sysctl:
-    name: "{{ entry }}"
-    value: 1
-    sysctl_set: yes
-  loop:
-    - net.bridge.bridge-nf-call-ip6tables
-    - net.bridge.bridge-nf-call-iptables
-  loop_control:
-    loop_var: entry
