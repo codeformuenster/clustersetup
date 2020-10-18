@@ -1,0 +1,8 @@
+---
+- name: Install haproxy and keepalived
+  apt:
+    name:
+      - haproxy
+      - keepalived
+    state: present
+    update_cache: yes

@@ -27,6 +27,11 @@ Run playbooks
 
     ansible-playbook --inventory inventory.yaml clustersetup.yaml
 
+Then, bootstrap your nodes
+
+    ansible-playbook --tags bootstrap-nodes --inventory inventory.yaml clustersetup.yaml
+
 ### References
 
 - https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/high-availability/
+- https://github.com/kubernetes/kubeadm/blob/d4b2a53/docs/ha-considerations.md
