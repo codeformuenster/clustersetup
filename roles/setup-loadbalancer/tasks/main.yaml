@@ -6,3 +6,14 @@
       - keepalived
     state: present
     update_cache: yes
+
+- name: Create check_apiserver.sh script for keepalived
+
+
+- name: Create keepalived configuration
+
+- name: Create haproxy configuration
+
+- name: Restart and enable keepalived systemd service when its configuration changed
+
+- name: Restart and enable haproxy systemd service when its configuration changed

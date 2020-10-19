@@ -60,7 +60,9 @@
 
 - name: Install docker, kubelet, kubeadm and kubectl
   apt:
-    name: ['docker-ce=5:19.03.11~3-0~ubuntu-focal', 'kubelet', 'kubeadm', 'kubectl']
+    name: ['docker-ce={{ docker_version }}', 'kubelet', 'kubeadm', 'kubectl']
+
+# TODO add apt pin for docker-ce
 
 - name: Set up docker stuff
   shell: |
