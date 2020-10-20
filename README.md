@@ -6,6 +6,8 @@ Hobbyist bare metal kubernetes cluster setup using ansible
 
 Directory `keys` should contain a ssh key for accessing your nodes through ssh.
 
+You also should have the `vault-id` password for encrypted values in the root directory of this repository.
+
 For nodes, Ubuntu 20.04 LTS is used
 
 - Select "Open SSH Server" and "Basic Ubuntu server" at installation
@@ -25,7 +27,7 @@ Only do this the very first time (for a new host add `--limit "NAME-OF-NEW-HOST-
 
 Run playbooks
 
-    ansible-playbook --inventory inventory.yaml clustersetup.yaml
+    ansible-playbook --inventory inventory.yaml --vault-id clustersetup.yaml
 
 Then, bootstrap your nodes
 

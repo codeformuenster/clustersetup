@@ -58,27 +58,34 @@
   apt:
     update_cache: yes
 
+- name: Add the apt version pinning file
+  template:
+    dest: /etc/apt/preferences.d/docker
+    src: docker_apt_preferences.j2
+
 - name: Install docker, kubelet, kubeadm and kubectl
   apt:
-    name: ['docker-ce={{ docker_version }}', 'kubelet', 'kubeadm', 'kubectl']
+    name:
+    - "docker-ce={{ docker_version }}"
+    - "docker-ce-cli={{ docker_cli_version }}"
+    - "containerd.io={{ containerd_version }}"
+    - "kubelet={{ kubelet_version }}"
+    - "kubeadm={{ kubeadm_version }}"
+    - kubectl
 
-# TODO add apt pin for docker-ce
+- name: Copy docker daemon.json to host
+  copy:
+    src: docker_daemon.json
+    dest: /etc/docker/daemon.json
+  register: docker_daemon_config_file
 
-- name: Set up docker stuff
-  shell: |
-    cat > /etc/docker/daemon.json <<EOF
-    {
-      "exec-opts": ["native.cgroupdriver=systemd"],
-      "log-driver": "json-file",
-      "log-opts": {
-        "max-size": "100m"
-      },
-      "storage-driver": "overlay2"
-    }
-    EOF
+- name: Restart docker service if docker_daemon_config_file changed
+  service:
+    name: docker
+    state: restarted
+  when: docker_daemon_config_file.changed
 
 - name: Enable docker and kubelet systemd units
-  become: yes
   systemd:
     state: started
     name: "{{ item }}"

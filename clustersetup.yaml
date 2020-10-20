@@ -16,7 +16,8 @@
   - dev-sec.ssh-hardening
   - oefenweb.fail2ban
   - disable-swap
-  - setup-loadbalancer
+  - role: setup-loadbalancer
+    tags: [ setup-loadbalancer ]
   - role: install-kubeadm
     tags: [ install-kubeadm ]
   - role: bootstrap-nodes
