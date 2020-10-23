@@ -1,4 +1,5 @@
 # /etc/haproxy/haproxy.cfg
+{{ ansible_managed | comment }}
 #---------------------------------------------------------------------
 # Global settings
 #---------------------------------------------------------------------
@@ -32,7 +33,7 @@ defaults
 # apiserver frontend which proxys to the masters
 #---------------------------------------------------------------------
 frontend apiserver
-    bind *:{{ kube_apiserver_port }}
+    bind *:{{ vip_kube_apiserver_port }}
     mode tcp
     option tcplog
     default_backend apiserver
@@ -46,5 +47,6 @@ backend apiserver
     mode tcp
     option ssl-hello-chk
     balance     roundrobin
-        server ${HOST1_ID} ${HOST1_ADDRESS}:${APISERVER_SRC_PORT} check
-        # [...]
+        {% for hostname in groups['all'] -%}
+        server {{ hostvars[hostname].inventory_hostname_short }} {{ hostvars[hostname].private_ip }}:{{ kube_apiserver_port }} check
+        {% endfor %}

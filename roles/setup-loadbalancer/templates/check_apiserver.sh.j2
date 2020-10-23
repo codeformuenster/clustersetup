@@ -1,11 +1,13 @@
 #!/bin/sh
 
+{{ ansible_managed | comment }}
+
 errorExit() {
     echo "*** $*" 1>&2
     exit 1
 }
 
-curl --silent --max-time 2 --insecure https://localhost:{{ kube_apiserver_port }}/ -o /dev/null || errorExit "Error GET https://localhost:{{ kube_apiserver_port }}/"
-if ip addr | grep -q {{ kube_apiserver_name }}; then
-    curl --silent --max-time 2 --insecure https://{{ kube_apiserver_name }}:{{ kube_apiserver_port }}/ -o /dev/null || errorExit "Error GET https://{{ kube_apiserver_name }}:{{ kube_apiserver_port }}/"
+curl --silent --max-time 2 --insecure https://localhost:{{ vip_kube_apiserver_port }}/ -o /dev/null || errorExit "Error GET https://localhost:{{ vip_kube_apiserver_port }}/"
+if ip addr | grep -q {{ vip_kube_apiserver_name }}; then
+    curl --silent --max-time 2 --insecure https://{{ vip_kube_apiserver_name }}:{{ vip_kube_apiserver_port }}/ -o /dev/null || errorExit "Error GET https://{{ vip_kube_apiserver_name }}:{{ vip_kube_apiserver_port }}/"
 fi

@@ -1,8 +1,0 @@
----
-- name: Let kubeadm pull kubernetes images
-  shell: |
-    kubeadm config images pull
-
-- name: Run kubeadm init
-  shell: |
-    kubeadm init
