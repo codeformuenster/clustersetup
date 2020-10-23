@@ -40,19 +40,21 @@
   loop_control:
     loop_var: entry
 
-- name: Add GPG keys for docker and kubernetes
+- name: Add GPG keys for docker, kubernetes and helm
   apt_key:
     url: "{{ item }}"
   with_items:
     - "https://download.docker.com/linux/debian/gpg"
     - "https://packages.cloud.google.com/apt/doc/apt-key.gpg"
+    - "https://baltocdn.com/helm/signing.asc"
 
-- name: Add package repositories for docker and kubernetes
+- name: Add package repositories for docker, kubernetes and helm
   apt_repository:
     repo: "{{ item }}"
   with_items:
     - "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
     - "deb https://apt.kubernetes.io/ kubernetes-xenial main"
+    - "deb https://baltocdn.com/helm/stable/debian/ all main"
 
 - name: Refresh package repositories
   apt:
@@ -63,7 +65,7 @@
     dest: /etc/apt/preferences.d/docker
     src: docker_apt_preferences.j2
 
-- name: Install docker, kubelet, kubeadm and kubectl
+- name: Install docker, kubelet, kubeadm, kubectl and helm
   apt:
     name:
     - "docker-ce={{ docker_version }}"
@@ -71,6 +73,7 @@
     - "containerd.io={{ containerd_version }}"
     - "kubelet={{ kubelet_version }}"
     - "kubeadm={{ kubeadm_version }}"
+    - "helm={{ helm_version }}"
     - kubectl
 
 - name: Copy docker daemon.json to host
