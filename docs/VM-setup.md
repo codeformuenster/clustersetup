@@ -97,9 +97,15 @@ For these steps, you'll need the VMs: external IP (v4 & v6), netmasks, and gatew
           ens18:
             addresses:
             - X.X.X.X/YY
+            - 192.168.54.10/24 # use 10, 11, 12... for private ip
             - Z:Z:..../AA
             gateway4: X.X.X.X
             gateway6: Z:Z:Z:Z....
+            nameservers:
+              addresses:
+              - 1.1.1.1
+              - 2606:4700:4700::1111
+              - 1.0.0.1
 
 - Execute `netplan apply`. This will disrupt the network connection briefly. If you have made an error, continue using the VNC console
 - Transfer your ssh public key to the host `ssh-copy-id -i keys/kube-vsh.pub kube@X.X.X.X`

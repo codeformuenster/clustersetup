@@ -27,9 +27,11 @@ Only do this the very first time (for a new host add `--limit "NAME-OF-NEW-HOST-
 
 Run playbooks
 
-    ansible-playbook --inventory inventory.yaml --vault-id clustersetup.yaml
+    ansible-playbook --inventory inventory.yaml --vault-id vault-id clustersetup.yaml
 
 Then, bootstrap your nodes
+
+**Attention**: The `bootstrap-nodes` should be used only once for your cluster or after manually running `kubeadm reset --force && rm -rf /etc/cni/net.d` on all of the nodes.
 
     ansible-playbook --tags bootstrap-nodes --inventory inventory.yaml clustersetup.yaml
 
