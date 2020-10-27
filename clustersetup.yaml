@@ -16,7 +16,7 @@
   - dev-sec.ssh-hardening
   - oefenweb.fail2ban
   - disable-swap
-  - firewall
+  # - firewall
   - role: setup-loadbalancer
     tags: [ setup-loadbalancer ]
   - role: install-kubeadm
@@ -27,7 +27,12 @@
   - role: bootstrap-primary
     tags: [ never, bootstrap-nodes ]
 
-- hosts: kube2.vsh.codeformuenster.org #:kube3.vsh.codeformuenster.org
+- hosts: kube2.vsh.codeformuenster.org:kube3.vsh.codeformuenster.org
   roles:
   - role: bootstrap-secondaries
     tags: [ never, bootstrap-nodes ]
+
+- hosts: all
+  roles:
+  - role: bootstrap-common
+    tags: [ never, bootstrap-nodes, bootstrap-common ]

@@ -8,4 +8,4 @@ all:
   hosts:
     kube1.vsh.codeformuenster.org:
     kube2.vsh.codeformuenster.org:
-    #kube3.vsh.codeformuenster.org:
+    kube3.vsh.codeformuenster.org:

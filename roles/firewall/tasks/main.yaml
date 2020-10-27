@@ -37,6 +37,11 @@
     to_ip: "{{ keepalived_vip }}"
     direction: "in"
 
+# - name: "Allow traffic on service cidr 10.96.0.0/12"
+#   community.general.ufw:
+#     rule: allow
+#     src: "10.96.0.0/12"
+
 - name: "Allow some ports 80 and 443"
   community.general.ufw:
     rule: allow

@@ -10,9 +10,3 @@
       --discovery-token-unsafe-skip-ca-verification \
       --token {{ hostvars['KUBEADM']['kubeadm_token'] }} \
       --certificate-key {{ hostvars['KUBEADM']['kubeadm_cert_key'] }}
-
-- name: Remove node taint
-  shell: |
-    kubectl --kubeconfig /etc/kubernetes/admin.conf \
-    taint nodes {{ inventory_hostname }} \
-    node-role.kubernetes.io/master:NoSchedule-

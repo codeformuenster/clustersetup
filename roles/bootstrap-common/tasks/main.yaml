@@ -1,0 +1,7 @@
+---
+- name: Remove node taint
+  shell: |
+    kubectl --kubeconfig /etc/kubernetes/admin.conf \
+    taint nodes {{ inventory_hostname }} \
+    node-role.kubernetes.io/master:NoSchedule-
+  ignore_errors: yes
