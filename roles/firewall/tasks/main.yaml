@@ -1,9 +1,9 @@
 ---
-# - name: Install ufw
-#   apt:
-#     name: ufw
-#     state: present
-#     update_cache: yes
+- name: Install ufw
+  apt:
+    name: ufw
+    state: present
+    update_cache: yes
 
 - name: Deny everything incoming
   community.general.ufw:
@@ -45,3 +45,7 @@
     to_ip: "{{ keepalived_vip }}"
     direction: "in"
   loop: "{{ ['80', '443'] | flatten(levels=1) }}"
+
+- name: Enable ufw
+  community.general.ufw:
+    state: enabled
