@@ -7,5 +7,5 @@ all:
     ansible_ssh_private_key_file: "{{ playbook_dir }}/keys/kube-vsh"
   hosts:
     kube1.vsh.codeformuenster.org:
-    #kube2.vsh.codeformuenster.org:
-    #kube3.vsh.codeformuenster.org:
+    kube2.vsh.codeformuenster.org:
+    kube3.vsh.codeformuenster.org:

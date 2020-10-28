@@ -1,0 +1,47 @@
+---
+- name: Install haproxy and keepalived
+  apt:
+    name:
+      - haproxy
+      - keepalived
+    state: present
+    update_cache: yes
+
+- name: Create check_apiserver.sh script for keepalived
+  template:
+    dest: /etc/keepalived/check_apiserver.sh
+    src: check_apiserver.sh.j2
+    mode: a+x
+
+- name: Create keepalived configuration
+  template:
+    dest: /etc/keepalived/keepalived.conf
+    src: keepalived.conf.j2
+  register: keepalived_config_file
+
+- name: Create haproxy configuration
+  template:
+    dest: /etc/haproxy/haproxy.cfg
+    src: haproxy.cfg.j2
+  register: haproxy_config_file
+
+- name: Restart keepalived service if keepalived_config_file changed
+  service:
+    name: keepalived
+    state: restarted
+  when: keepalived_config_file.changed
+
+- name: Restart haproxy service if haproxy_config_file changed
+  service:
+    name: haproxy
+    state: restarted
+  when: haproxy_config_file.changed
+
+- name: Enable keepalived and haproxy systemd units
+  systemd:
+    state: started
+    name: "{{ item }}"
+    enabled: yes
+  with_items:
+    - "keepalived"
+    - "haproxy"

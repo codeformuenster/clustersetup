@@ -5,6 +5,7 @@
       - apt-transport-https
       - ca-certificates
       - software-properties-common
+      - iptables
       - arptables
       - ebtables
       - gnupg2
@@ -22,44 +23,72 @@
     - "arptables"
     - "ebtables"
 
+- name: Load the br_netfilter kernel module
+  modprobe:
+    name: br_netfilter
+    state: present
 
-- name: Add GPG keys for docker and kubernetes
+- name: Configure iptables to route packets across the network bridge
+  become: yes
+  sysctl:
+    name: "{{ entry }}"
+    value: "1"
+    sysctl_set: yes
+  loop:
+    - net.bridge.bridge-nf-call-ip6tables
+    - net.bridge.bridge-nf-call-iptables
+  loop_control:
+    loop_var: entry
+
+- name: Add GPG keys for docker, kubernetes and helm
   apt_key:
     url: "{{ item }}"
   with_items:
     - "https://download.docker.com/linux/debian/gpg"
     - "https://packages.cloud.google.com/apt/doc/apt-key.gpg"
+    - "https://baltocdn.com/helm/signing.asc"
 
-- name: Add package repositories for docker and kubernetes
+- name: Add package repositories for docker, kubernetes and helm
   apt_repository:
     repo: "{{ item }}"
   with_items:
     - "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
     - "deb https://apt.kubernetes.io/ kubernetes-xenial main"
+    - "deb https://baltocdn.com/helm/stable/debian/ all main"
 
 - name: Refresh package repositories
   apt:
     update_cache: yes
 
-- name: Install docker, kubelet, kubeadm and kubectl
-  apt:
-    name: ['docker-ce=5:19.03.11~3-0~ubuntu-focal', 'kubelet', 'kubeadm', 'kubectl']
+- name: Add the apt version pinning file
+  template:
+    dest: /etc/apt/preferences.d/docker
+    src: docker_apt_preferences.j2
 
-- name: Set up docker stuff
-  shell: |
-    cat > /etc/docker/daemon.json <<EOF
-    {
-      "exec-opts": ["native.cgroupdriver=systemd"],
-      "log-driver": "json-file",
-      "log-opts": {
-        "max-size": "100m"
-      },
-      "storage-driver": "overlay2"
-    }
-    EOF
+- name: Install docker, kubelet, kubeadm, kubectl and helm
+  apt:
+    name:
+    - "docker-ce={{ docker_version }}"
+    - "docker-ce-cli={{ docker_cli_version }}"
+    - "containerd.io={{ containerd_version }}"
+    - "kubelet={{ kubelet_version }}"
+    - "kubeadm={{ kubeadm_version }}"
+    - "helm={{ helm_version }}"
+    - kubectl
+
+- name: Copy docker daemon.json to host
+  copy:
+    src: docker_daemon.json
+    dest: /etc/docker/daemon.json
+  register: docker_daemon_config_file
+
+- name: Restart docker service if docker_daemon_config_file changed
+  service:
+    name: docker
+    state: restarted
+  when: docker_daemon_config_file.changed
 
 - name: Enable docker and kubelet systemd units
-  become: yes
   systemd:
     state: started
     name: "{{ item }}"
@@ -67,20 +96,3 @@
   with_items:
     - "docker"
     - "kubelet"
-
-- name: Ensuring that the br_netfilter kernel module is loaded.
-  modprobe:
-    name: br_netfilter
-    state: present
-
-- name: Configuring iptables to route packets across the network bridge.
-  become: yes
-  sysctl:
-    name: "{{ entry }}"
-    value: 1
-    sysctl_set: yes
-  loop:
-    - net.bridge.bridge-nf-call-ip6tables
-    - net.bridge.bridge-nf-call-iptables
-  loop_control:
-    loop_var: entry

@@ -5,16 +5,34 @@
   - name: install python 3
     raw: test -e /usr/bin/python3 -a -e /usr/bin/pip3 || (apt-get -y update && apt-get install -y python3-minimal python3-setuptools python3-pip)
     tags:
-    - [ never, initial_setup ]
+    - [ never, initial-setup ]
 
 - hosts: all
   roles:
   - role: common
-    tags: [ initial_setup ]
+    tags: [ initial-setup ]
   - role: user
-    tags: [ initial_setup ]
+    tags: [ initial-setup ]
   - dev-sec.ssh-hardening
   - oefenweb.fail2ban
   - disable-swap
-  - install-kubeadm
-  # - bootstrap-nodes
+  # - firewall
+  - role: setup-loadbalancer
+    tags: [ setup-loadbalancer ]
+  - role: install-kubeadm
+    tags: [ install-kubeadm ]
+
+- hosts: kube1.vsh.codeformuenster.org
+  roles:
+  - role: bootstrap-primary
+    tags: [ never, bootstrap-nodes ]
+
+- hosts: kube2.vsh.codeformuenster.org:kube3.vsh.codeformuenster.org
+  roles:
+  - role: bootstrap-secondaries
+    tags: [ never, bootstrap-nodes ]
+
+- hosts: all
+  roles:
+  - role: bootstrap-common
+    tags: [ never, bootstrap-nodes, bootstrap-common ]

@@ -48,8 +48,10 @@ d-i partman/confirm_nooverwrite boolean true
 
 
 tasksel tasksel/first multiselect ubuntu-server
-d-i pkgsel/include string openssh-server
+d-i pkgsel/include string openssh-server vim
 d-i pkgsel/upgrade select full-upgrade
+
+d-i apt-setup/security-updates boolean true
 
 d-i pkgsel/update-policy select unattended-upgrades
 
@@ -58,6 +60,3 @@ popularity-contest popularity-contest/participate boolean false
 d-i grub-installer/only_debian boolean true
 
 d-i finish-install/reboot_in_progress note
-
-d-i debian-installer/exit/halt boolean true
-d-i debian-installer/exit/poweroff boolean true

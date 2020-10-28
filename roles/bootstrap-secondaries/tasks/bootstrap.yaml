@@ -1,0 +1,12 @@
+---
+- name: Run kubeadm join on the other hosts
+  shell: |
+    kubeadm join \
+      "{{ hostvars['kube1.vsh.codeformuenster.org'].private_ip }}:{{ kube_apiserver_port }}" \
+      --control-plane \
+      --apiserver-advertise-address {{ private_ip }} \
+      --apiserver-bind-port {{ kube_apiserver_port }} \
+      --node-name {{ inventory_hostname }} \
+      --discovery-token-unsafe-skip-ca-verification \
+      --token {{ hostvars['KUBEADM']['kubeadm_token'] }} \
+      --certificate-key {{ hostvars['KUBEADM']['kubeadm_cert_key'] }}

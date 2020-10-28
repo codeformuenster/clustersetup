@@ -1,0 +1,65 @@
+---
+- name: Generate a kubeadm join token on the first host
+  shell: |
+    kubeadm token generate
+  register: kubeadm_token
+
+- name: Generate a kubeadm certificate key on the first host
+  shell: |
+    kubeadm alpha certs certificate-key
+  register: kubeadm_cert_key
+
+- name: Register dummy host with variables from kubeadm
+  add_host:
+    name: "KUBEADM"
+    kubeadm_cert_key: "{{ kubeadm_cert_key.stdout }}"
+    kubeadm_token: "{{ kubeadm_token.stdout }}"
+
+- name: Run kubeadm init on the first host
+  shell: |
+    kubeadm init \
+      --control-plane-endpoint "{{ vip_kube_apiserver_name }}:{{ vip_kube_apiserver_port }}" \
+      --apiserver-advertise-address {{ private_ip }} \
+      --apiserver-bind-port {{ kube_apiserver_port }} \
+      --node-name {{ inventory_hostname }} \
+      --skip-certificate-key-print \
+      --skip-token-print \
+      --upload-certs \
+      --token {{ hostvars['KUBEADM']['kubeadm_token'] }} \
+      --certificate-key {{ hostvars['KUBEADM']['kubeadm_cert_key'] }}
+
+- name: Wait for kube-system pods to be ready
+  shell: |
+    sleep 30 && \
+    kubectl --kubeconfig /etc/kubernetes/admin.conf \
+    -n kube-system \
+    wait \
+    --for=condition=Ready \
+    pod -l tier=control-plane \
+    --timeout=10m
+
+- name: Install cilium on the first host
+  shell: |
+    helm repo add cilium https://helm.cilium.io/ --force-update && \
+    helm repo update && \
+    helm --kubeconfig /etc/kubernetes/admin.conf \
+      install cilium cilium/cilium --version {{ cilium_version }} \
+      --namespace kube-system
+
+- name: Wait again for kube-system pods to be ready
+  shell: |
+    kubectl --kubeconfig /etc/kubernetes/admin.conf \
+    -n kube-system \
+    wait \
+    --for=condition=Ready \
+    pod -l k8s-app=kube-dns \
+    --timeout=10m
+
+# - name: Wait again for cilium pods to be ready
+#   shell: |
+#     kubectl --kubeconfig /etc/kubernetes/admin.conf \
+#     -n kube-system \
+#     wait \
+#     --for=condition=Ready \
+#     pod -l io.cilium/app=operator \
+#     --timeout=10m

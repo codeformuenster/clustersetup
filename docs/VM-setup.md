@@ -4,6 +4,8 @@ We're using Ubuntu 20.04 LTS as server OS. This document explains the installati
 
 ## Prerequisites
 
+Our VMs run on Proxmox, but that usually does not matter. It should work any other way.
+
 - In the "Hardware" menu
     - Remove the VLAN tag of the network device
 - In the "Options" menu
@@ -12,7 +14,7 @@ We're using Ubuntu 20.04 LTS as server OS. This document explains the installati
 - On your local machine, `xdotool` is really handy to enter passwords
 
 
-## Manual installation of the VM
+## Installation of the VM (preseed and manual)
 
 - Start the VM and open the VNC Console
 - Wait for PXE boot to load the network boot menu
@@ -20,8 +22,18 @@ We're using Ubuntu 20.04 LTS as server OS. This document explains the installati
     - "Linux Network Installs"
     - "Ubuntu"
     - "Ubuntu 20.04 LTS Focal Fossa"
-    - "Install"
 
+## Preseed
+
+Instead of selecting "Install", select "Specify preseed url..."
+
+Using `xdotool` you can enter `https://raw.githubusercontent.com/codeformuenster/clustersetup/main/docs/preseed.txt`.
+
+```
+sleep 1; xdotool type "https://raw.githubusercontent.com/codeformuenster/clustersetup/main/docs/preseed.txt"
+```
+
+Watch the machine install itself. Continue with [After installation](#after-installation).
 
 ## Manual installation steps
 
@@ -62,9 +74,10 @@ Select "Install" without specifying a preseed url
     - Add the VLAN tag of the network device (removed in the first step)
 - In the "Options" menu
     - Set "Boot order" to boot "Disk" first
+- Make sure Firewall is enabled & allows traffic on port 22
 - Start the VM
 - Open the VNC console
-- First Boot will take quite some time (Waiting for network which is not configured)
+- **First Boot will take quite some time (Waiting for network which is not configured)**
 - Esc maybe will show you some progress
 - If the only a cursor blinks in the top left corner
     - Send Ctrl + Alt + F1
@@ -72,7 +85,7 @@ Select "Install" without specifying a preseed url
 - Use username "kube" and the password from the installation routine to sign in
 - Execute `ip a`. Interface `ens18` will have a dynamic IPv6 address.
 
-## Set up network
+## Set up network & ssh pulic key authentication
 
 For these steps, you'll need the VMs: external IP (v4 & v6), netmasks, and gateways.
 
@@ -86,9 +99,15 @@ For these steps, you'll need the VMs: external IP (v4 & v6), netmasks, and gatew
           ens18:
             addresses:
             - X.X.X.X/YY
+            - 192.168.54.10/24 # use 10, 11, 12... for private ip
             - Z:Z:..../AA
             gateway4: X.X.X.X
             gateway6: Z:Z:Z:Z....
+            nameservers:
+              addresses:
+              - 1.1.1.1
+              - 2606:4700:4700::1111
+              - 1.0.0.1
 
 - Execute `netplan apply`. This will disrupt the network connection briefly. If you have made an error, continue using the VNC console
 - Transfer your ssh public key to the host `ssh-copy-id -i keys/kube-vsh.pub kube@X.X.X.X`
