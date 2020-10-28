@@ -4,6 +4,8 @@ We're using Ubuntu 20.04 LTS as server OS. This document explains the installati
 
 ## Prerequisites
 
+Our VMs run on Proxmox, but that usually does not matter. It should work any other way.
+
 - In the "Hardware" menu
     - Remove the VLAN tag of the network device
 - In the "Options" menu

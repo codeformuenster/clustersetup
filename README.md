@@ -1,6 +1,6 @@
 # clustersetup
 
-Hobbyist bare metal kubernetes cluster setup using ansible
+Hobbyist bare metal kubernetes cluster setup using ansible. Used for serving some of our applications.
 
 ## Requirements
 
@@ -13,7 +13,7 @@ For nodes, Ubuntu 20.04 LTS is used
 - Select "Open SSH Server" and "Basic Ubuntu server" at installation
 - Allows signing in using the ssh key in `keys/kube-vsh`
 
-Check out [VM-setup.md](docs/VM-setup.md) for a detailed description.
+Check out [VM-setup.md](docs/VM-setup.md) for a detailed description and a preseed file.
 
 ## With local python & ansible installion
 
@@ -31,7 +31,9 @@ Run playbooks
 
 Then, bootstrap your nodes
 
-**Attention**: The `bootstrap-nodes` should be used only once for your cluster or after manually running `kubeadm reset --force && rm -rf /etc/cni/net.d` on all of the nodes.
+**Attention**: It is strongly advised to reboot your VMs before bootstrapping. Otherwise cgroup driver of docker and kubelet won't match. At least restart the docker service.
+
+**Attention #2**: The `bootstrap-nodes` should be used only once for your cluster or after manually running `kubeadm reset --force && rm -rf /etc/cni/net.d` on all of the nodes.
 
     ansible-playbook --tags bootstrap-nodes --inventory inventory.yaml clustersetup.yaml
 
