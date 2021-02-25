@@ -23,6 +23,12 @@
     state: present
     update_cache: yes
 
+- name: install ubuntu hardware enablement (newer kernel)
+  apt:
+    name: linux-generic-hwe-20.04
+    state: present
+    install_recommends: yes
+
 - name: "Set hostname on server to {{ inventory_hostname }}"
   hostname:
     name: "{{ inventory_hostname }}"

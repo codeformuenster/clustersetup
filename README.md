@@ -25,6 +25,10 @@ Only do this the very first time (for a new host add `--limit "NAME-OF-NEW-HOST-
 
     ansible-playbook --tags initial-setup --inventory inventory.yaml --ask-become-pass clustersetup.yaml
 
+It is recommended to shut down (`sudo shutdown -h now` via ssh) your server to activate the `qemu-guest-agent` integration in Proxmox.
+
+After starting your server again, do a full upgrade (`sudo apt update && sudo apt upgrade -y`).
+
 Run playbooks
 
     ansible-playbook --inventory inventory.yaml --vault-id vault-id clustersetup.yaml
