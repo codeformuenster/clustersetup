@@ -10,6 +10,7 @@
       - ebtables
       - gnupg2
       - openssl
+      - open-iscsi
     state: present
     update_cache: yes
 
@@ -80,13 +81,27 @@
   copy:
     src: docker_daemon.json
     dest: /etc/docker/daemon.json
-  register: docker_daemon_config_file
+  register: docker_daemon_restart
 
-- name: Restart docker service if docker_daemon_config_file changed
+- name: Create docker service drop-in directory
+  file:
+    path: /etc/systemd/system/docker.service.d
+    state: directory
+
+- name: Create a docker service drop-in to enable shared mounts
+  copy:
+    content: |
+      [Service]
+      MountFlags=shared
+    dest: /etc/systemd/system/docker.service.d/mountflags-shared.conf
+  register: docker_daemon_restart
+
+- name: Restart docker service if docker_daemon_restart changed
   service:
     name: docker
     state: restarted
-  when: docker_daemon_config_file.changed
+    daemon_reload: yes
+  when: docker_daemon_restart.changed
 
 - name: Enable docker and kubelet systemd units
   systemd:
