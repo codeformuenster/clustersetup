@@ -15,6 +15,8 @@ For nodes, Ubuntu 20.04 LTS is used
 
 Check out [VM-setup.md](docs/VM-setup.md) for a detailed description and a preseed file.
 
+Also check out [Network.md](docs/Network.md) for some hints regarding DNS.
+
 ## With local python & ansible installion
 
 Install dependencies
@@ -23,7 +25,7 @@ Install dependencies
 
 Only do this the very first time (for a new host add `--limit "NAME-OF-NEW-HOST-FROM-INVENTORY"`)
 
-    ansible-playbook --tags initial-setup --inventory inventory.yaml --ask-become-pass clustersetup.yaml
+    ansible-playbook --tags initial-setup --ask-become-pass clustersetup.yaml
 
 It is recommended to shut down (`sudo shutdown -h now` via ssh) your server to activate the `qemu-guest-agent` integration in Proxmox.
 
@@ -31,7 +33,7 @@ After starting your server again, do a full upgrade (`sudo apt update && sudo ap
 
 Run playbooks
 
-    ansible-playbook --inventory inventory.yaml --vault-id vault-id clustersetup.yaml
+    ansible-playbook clustersetup.yaml
 
 Then, bootstrap your nodes
 
@@ -39,7 +41,7 @@ Then, bootstrap your nodes
 
 **Attention #2**: The `bootstrap-nodes` should be used only once for your cluster or after manually running `kubeadm reset --force && rm -rf /etc/cni/net.d` on all of the nodes.
 
-    ansible-playbook --tags bootstrap-nodes --inventory inventory.yaml clustersetup.yaml
+    ansible-playbook --tags bootstrap-nodes clustersetup.yaml
 
 ### References
 
