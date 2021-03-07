@@ -1,0 +1,20 @@
+---
+- import_tasks: install-kustomize.yaml
+
+- name: Create tmp dir for flux kustomization
+  ansible.builtin.file:
+    path: "/tmp/flux-kustomization"
+    state: directory
+
+- name: Transfer flux kustomization
+  ansible.builtin.template:
+    src: "templates/{{ item }}.j2"
+    dest: "/tmp/flux-kustomization/{{ item }}"
+  loop:
+    - kustomization.yaml
+    - gitrepository.yaml
+
+#- name: kustomize build | kubectl apply -f -
+#  ansible.builtin.shell: |
+#    kustomize build /tmp/flux-kustomization | \
+#      kubectl--kubeconfig /etc/kubernetes/admin.conf apply -f -

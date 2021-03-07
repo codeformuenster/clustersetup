@@ -1,0 +1,10 @@
+---
+kustomize_version: v4.0.4
+flux_version: v0.9.1
+
+# TODO set up
+git_repository: github.com/stefanprodan/podinfo
+
+ssh_identity: ding
+ssh_identity_pub: ding-dong
+ssh_known_hosts: dang
