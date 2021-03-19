@@ -6,13 +6,20 @@
     path: "/tmp/flux-kustomization"
     state: directory
 
-- name: Transfer flux kustomization
+- name: Transfer flux kustomization files
+  ansible.builtin.copy:
+    src: "files/{{ item }}"
+    dest: "/tmp/flux-kustomization/{{ item }}"
+  loop:
+    - zero-replicas-patch.yaml
+
+- name: Transfer flux kustomization templates
   ansible.builtin.template:
     src: "templates/{{ item }}.j2"
     dest: "/tmp/flux-kustomization/{{ item }}"
   loop:
     - kustomization.yaml
-    - gitrepository.yaml
+    - kubernetes-deployment.yaml
 
 #- name: kustomize build | kubectl apply -f -
 #  ansible.builtin.shell: |

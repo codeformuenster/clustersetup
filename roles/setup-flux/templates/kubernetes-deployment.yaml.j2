@@ -1,0 +1,62 @@
+apiVersion: source.toolkit.fluxcd.io/v1beta1
+kind: GitRepository
+metadata:
+  name: kubernetes-deployment
+spec:
+  interval: 10m
+  url: {{ git_repository }}
+  ref:
+    branch: master
+---
+apiVersion: v1
+data:
+  "sops.asc": "{{ sops_gpg_key | string | b64encode }}"
+kind: Secret
+metadata:
+  name: kubernetes-deployment-sops-gpg
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: kubernetes-deployment-credentials
+type: Opaque
+data:
+  token: "{{ github_personal_access_token | string | b64encode }}"
+---
+apiVersion: notification.toolkit.fluxcd.io/v1beta1
+kind: Provider
+metadata:
+  name: kubernetes-deployment-github-notification-provider
+spec:
+  type: github
+  address: {{ git_repository }}
+  secretRef:
+    name: kubernetes-deployment-credentials
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta1
+kind: Kustomization
+metadata:
+  name: kubernetes-deployment
+spec:
+  interval: 5m
+  prune: false
+  sourceRef:
+    kind: GitRepository
+    name: kubernetes-deployment
+  validation: client
+  decryption:
+    provider: sops
+    secretRef:
+      name: kubernetes-deployment-sops-gpg
+---
+apiVersion: notification.toolkit.fluxcd.io/v1beta1
+kind: Alert
+metadata:
+  name: kubernetes-deployment-github-alert
+spec:
+  providerRef:
+    name: kubernetes-deployment-github-notification-provider
+  eventSeverity: info
+  eventSources:
+    - kind: Kustomization
+      name: kubernetes-deployment

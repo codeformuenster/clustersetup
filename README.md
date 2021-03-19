@@ -10,12 +10,11 @@ You also should have the `vault-id` password for encrypted values in the root di
 
 For nodes, Ubuntu 20.04 LTS is used
 
-- Select "Open SSH Server" and "Basic Ubuntu server" at installation
-- Allows signing in using the ssh key in `keys/kube-vsh`
-
 Check out [VM-setup.md](docs/VM-setup.md) for a detailed description and a preseed file.
 
 Also check out [Network.md](docs/Network.md) for some hints regarding DNS.
+
+Finally, we're using [Flux v2](https://github.com/fluxcd/flux2) to install (almost) all components and applications. Check [GitOps.md](docs/GitOps.md) for a detailed description of our setup.
 
 ## With local python & ansible installion
 
