@@ -1,0 +1,4 @@
+---
+longhorn_disk: "/dev/sdb"
+longhorn_disk_partition: "/dev/sdb1"
+longhorn_disk_mountpoint: "/var/lib/longhorn"

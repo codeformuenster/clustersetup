@@ -21,6 +21,8 @@
     tags: [ setup-loadbalancer ]
   - role: install-kubeadm
     tags: [ install-kubeadm ]
+  - role: prepare-disk
+    tags: [ prepare-disk ]
 
 - hosts: kube1.vsh.codeformuenster.org
   roles:
