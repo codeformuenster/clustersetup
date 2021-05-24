@@ -1,0 +1,29 @@
+---
+- name: Check version of kustomize
+  ansible.builtin.shell: "kustomize version | grep -q {{ kustomize_version }}"
+  register: installed_kustomize_version
+  ignore_errors: yes
+
+- name: Download kustomize checksum files
+  when: installed_kustomize_version.rc != 0
+  ansible.builtin.get_url:
+    url: "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2F{{ kustomize_version }}/checksums.txt"
+    dest: "/tmp/checksums.txt"
+    mode: "0644"
+
+- name: Download kustomize binary
+  when: installed_kustomize_version.rc != 0
+  ansible.builtin.get_url:
+    url: "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2F{{ kustomize_version }}/kustomize_{{ kustomize_version }}_linux_amd64.tar.gz"
+    dest: "/tmp/kustomize_{{ kustomize_version }}_linux_amd64.tar.gz"
+    mode: "0644"
+  register: kustomize_archive
+
+- name: Unarchive kustomize
+  when: installed_kustomize_version.rc != 0
+  ansible.builtin.shell: |
+    set -ex
+    cd /tmp
+    sha256sum --ignore-missing -c checksums.txt
+    tar xfz /tmp/kustomize_{{ kustomize_version }}_linux_amd64.tar.gz -C /usr/local/bin
+    /usr/local/bin/kustomize version

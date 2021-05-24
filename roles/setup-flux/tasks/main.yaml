@@ -1,0 +1,37 @@
+---
+- import_tasks: install-kustomize.yaml
+
+- name: Create tmp dir for flux kustomization
+  ansible.builtin.file:
+    path: "/tmp/flux-kustomization"
+    state: directory
+
+- name: Transfer flux kustomization files
+  ansible.builtin.copy:
+    src: "files/{{ item }}"
+    dest: "/tmp/flux-kustomization/{{ item }}"
+  loop:
+    - zero-replicas-patch.yaml
+
+- name: Transfer flux kustomization templates
+  ansible.builtin.template:
+    src: "templates/{{ item }}.j2"
+    dest: "/tmp/flux-kustomization/{{ item }}"
+  loop:
+    - kustomization.yaml
+    - kubernetes-deployment.yaml
+
+- name: Install flux (kustomize build | kubectl apply -f -)
+  ansible.builtin.shell: |
+    kustomize build /tmp/flux-kustomization | \
+      kubectl --kubeconfig /etc/kubernetes/admin.conf apply -f -
+
+- name: Install flux CRs
+  ansible.builtin.shell: |
+    kubectl --kubeconfig /etc/kubernetes/admin.conf \
+      apply -f /tmp/flux-kustomization/kubernetes-deployment.yaml
+
+- name: Delete /tmp/flux-kustomization
+  ansible.builtin.file:
+    state: absent
+    path: /tmp/flux-kustomization

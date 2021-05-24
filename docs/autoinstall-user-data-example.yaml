@@ -1,0 +1,42 @@
+#cloud-config
+autoinstall:
+  version: 1
+  interactive-sections: []
+  locale: en_US.UTF-8
+  refresh-installer:
+    update: true
+  keyboard:
+    layout: us
+    variant: ""
+  network:
+    version: 2
+    renderer: networkd
+    ethernets:
+      ens18:
+        addresses:
+        - AAA.BBB.CCC.DDD/subnet
+        - 192.168.54.10/24
+        gateway4: w.x.y.z
+        gateway6: ipv6-gateway
+        nameservers:
+          addresses:
+          - 1.1.1.1
+          - 2606:4700:4700::1111
+          - 1.0.0.1
+  proxy: null
+  storage:
+    layout:
+      name: direct
+  identity:
+    username: kube
+    password: "output of openssl passwd -6 -salt some-random-salt your-password"
+    hostname: kube1
+  ssh:
+    install-server: true
+    allow-pw: false
+    authorized-keys:
+    - ssh-ed25519 AAAAC....
+  packages:
+  - htop
+  - vim
+  - tmux

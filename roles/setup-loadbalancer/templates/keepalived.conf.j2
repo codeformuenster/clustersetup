@@ -23,6 +23,12 @@ vrrp_instance VI_1 {
     }
     virtual_ipaddress {
         {{ keepalived_vip }}
+        {{ keepalived_vip_v6 }}
+    }
+    ! prevents errors that virtual ips must be of same family
+    ! but will assign both v4 and v6 vips
+    virtual_ipaddress_excluded {
+        {{ keepalived_vip_v6 }}
     }
     track_script {
         check_apiserver

@@ -21,17 +21,17 @@ Our VMs run on Proxmox, but that usually does not matter. It should work any oth
 - Select
     - "Linux Network Installs"
     - "Ubuntu"
-    - "Ubuntu 20.04 LTS Focal Fossa"
+    - "Ubuntu 20.04 LTS Focal Fossa (subiquity)"
 
-## Preseed
+## Autoinstall
 
 Instead of selecting "Install", select "Specify preseed url..."
 
-Using `xdotool` you can enter `https://raw.githubusercontent.com/codeformuenster/clustersetup/main/docs/preseed.txt`.
+Create empty files named `meta-data` and `vendor-data`. For `user-data` copy file [`autoinstall-user-data-example.yaml`](./autoinstall-user-data-example.yaml) and change accordingly.
 
-```
-sleep 1; xdotool type "https://raw.githubusercontent.com/codeformuenster/clustersetup/main/docs/preseed.txt"
-```
+Host these files somewhere the installer can access them.
+
+Using `xdotool` you can enter the url. (Or just manually type it)
 
 Watch the machine install itself. Continue with [After installation](#after-installation).
 
@@ -76,41 +76,10 @@ Select "Install" without specifying a preseed url
     - Set "Boot order" to boot "Disk" first
 - Make sure Firewall is enabled & allows traffic on port 22
 - Start the VM
-- Open the VNC console
-- **First Boot will take quite some time (Waiting for network which is not configured)**
-- Esc maybe will show you some progress
-- If the only a cursor blinks in the top left corner
-    - Send Ctrl + Alt + F1
-    - This will allow you to log in
-- Use username "kube" and the password from the installation routine to sign in
-- Execute `ip a`. Interface `ens18` will have a dynamic IPv6 address.
 
-## Set up network & ssh pulic key authentication
+### DNS settings
 
-For these steps, you'll need the VMs: external IP (v4 & v6), netmasks, and gateways.
-
-- Use the ipv6 from step before to ssh into the host `ssh kube@ipv6...`
-- Edit `/etc/netplan/01-netcfg.yaml` as root
-
-      network:
-        version: 2
-        renderer: networkd
-        ethernets:
-          ens18:
-            addresses:
-            - X.X.X.X/YY
-            - 192.168.54.10/24 # use 10, 11, 12... for private ip
-            - Z:Z:..../AA
-            gateway4: X.X.X.X
-            gateway6: Z:Z:Z:Z....
-            nameservers:
-              addresses:
-              - 1.1.1.1
-              - 2606:4700:4700::1111
-              - 1.0.0.1
-
-- Execute `netplan apply`. This will disrupt the network connection briefly. If you have made an error, continue using the VNC console
-- Transfer your ssh public key to the host `ssh-copy-id -i keys/kube-vsh.pub kube@X.X.X.X`
+Check the [Network documentation](Network.md)
 
 ### Initial ansible setup
 

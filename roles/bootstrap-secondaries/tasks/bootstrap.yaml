@@ -1,5 +1,5 @@
 ---
-- name: Run kubeadm join on the other hosts
+- name: Run kubeadm join on {{ inventory_hostname }}
   shell: |
     kubeadm join \
       "{{ hostvars['kube1.vsh.codeformuenster.org'].private_ip }}:{{ kube_apiserver_port }}" \
