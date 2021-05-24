@@ -21,7 +21,17 @@
     - kustomization.yaml
     - kubernetes-deployment.yaml
 
-#- name: kustomize build | kubectl apply -f -
-#  ansible.builtin.shell: |
-#    kustomize build /tmp/flux-kustomization | \
-#      kubectl--kubeconfig /etc/kubernetes/admin.conf apply -f -
+- name: Install flux (kustomize build | kubectl apply -f -)
+  ansible.builtin.shell: |
+    kustomize build /tmp/flux-kustomization | \
+      kubectl --kubeconfig /etc/kubernetes/admin.conf apply -f -
+
+- name: Install flux CRs
+  ansible.builtin.shell: |
+    kubectl --kubeconfig /etc/kubernetes/admin.conf \
+      apply -f /tmp/flux-kustomization/kubernetes-deployment.yaml
+
+- name: Delete /tmp/flux-kustomization
+  ansible.builtin.file:
+    state: absent
+    path: /tmp/flux-kustomization

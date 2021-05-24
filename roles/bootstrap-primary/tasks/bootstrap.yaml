@@ -55,6 +55,13 @@
     pod -l k8s-app=kube-dns \
     --timeout=10m
 
+- name: Restart unmanaged cilium pods
+  shell:
+    kubectl --kubeconfig /etc/kubernetes/admin.conf \
+    get pods --all-namespaces \
+    -o custom-columns=NAMESPACE:.metadata.namespace,NAME:.metadata.name,HOSTNETWORK:.spec.hostNetwork --no-headers=true | \
+    grep '<none>' | awk '{print "-n "$1" "$2}' | xargs -L 1 -r kubectl --kubeconfig /etc/kubernetes/admin.conf delete pod
+
 # - name: Wait again for cilium pods to be ready
 #   shell: |
 #     kubectl --kubeconfig /etc/kubernetes/admin.conf \

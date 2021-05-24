@@ -1,8 +1,9 @@
 ---
-kustomize_version: v4.0.5
-flux_version: v0.10.0
+kustomize_version: v4.1.3
+flux_version: v0.13.4
 
 git_repository: https://github.com/codeformuenster/kubernetes-deployment
+git_kustomization_path: vsh-cluster
 
 github_personal_access_token: !vault |
           $ANSIBLE_VAULT;1.1;AES256

@@ -39,11 +39,12 @@ metadata:
   name: kubernetes-deployment
 spec:
   interval: 5m
+  path: {{ git_kustomization_path }}
   prune: false
   sourceRef:
     kind: GitRepository
     name: kubernetes-deployment
-  validation: client
+  validation: server
   decryption:
     provider: sops
     secretRef:

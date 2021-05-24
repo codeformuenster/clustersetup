@@ -5,7 +5,6 @@ namespace: flux-system
 
 resources:
 - https://github.com/fluxcd/flux2/releases/download/{{ flux_version }}/install.yaml
-- ./kubernetes-deployment.yaml
 
 patches:
 - path: ./zero-replicas-patch.yaml
