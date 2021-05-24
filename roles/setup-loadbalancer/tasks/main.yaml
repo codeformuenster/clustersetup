@@ -7,6 +7,18 @@
     state: present
     update_cache: yes
 
+- name: Configure net.ipv4.ip_nonlocal_bind and net.ipv6.conf.all.forwarding sysctls
+  become: yes
+  sysctl:
+    name: "{{ entry }}"
+    value: "1"
+    sysctl_set: yes
+  loop:
+    - net.ipv4.ip_nonlocal_bind
+    - net.ipv6.conf.all.forwarding
+  loop_control:
+    loop_var: entry
+
 - name: Create check_apiserver.sh script for keepalived
   template:
     dest: /etc/keepalived/check_apiserver.sh

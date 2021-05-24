@@ -1,6 +1,7 @@
 ---
 # vip = Virtual IP
 keepalived_vip: 45.12.171.150
+keepalived_vip_v6: "2001:7c7:1704:fe::150"
 
 vip_kube_apiserver_name: kube.vsh.codeformuenster.org
 vip_kube_apiserver_port: 8443

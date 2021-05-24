@@ -28,8 +28,15 @@
   roles:
   - role: bootstrap-primary
     tags: [ never, bootstrap-nodes ]
+  - role: setup-flux
+    tags: [ never, bootstrap-nodes, setup-flux ]
 
-- hosts: kube2.vsh.codeformuenster.org:kube3.vsh.codeformuenster.org
+- hosts: kube2.vsh.codeformuenster.org
+  roles:
+  - role: bootstrap-secondaries
+    tags: [ never, bootstrap-nodes ]
+
+- hosts: kube3.vsh.codeformuenster.org
   roles:
   - role: bootstrap-secondaries
     tags: [ never, bootstrap-nodes ]
@@ -38,5 +45,3 @@
   roles:
   - role: bootstrap-common
     tags: [ never, bootstrap-nodes, bootstrap-common ]
-  - role: setup-flux
-    tags: [ never, bootstrap-nodes, setup-flux ]

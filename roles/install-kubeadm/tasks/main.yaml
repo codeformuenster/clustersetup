@@ -111,3 +111,9 @@
   with_items:
     - "docker"
     - "kubelet"
+
+- name: Copy kubeadm reset script to the host
+  ansible.builtin.copy:
+    src: reset-kube.sh
+    dest: /usr/local/bin/reset-kube.sh
+    mode: a+x

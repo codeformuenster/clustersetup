@@ -1,12 +1,12 @@
 ---
 - name: Generate a kubeadm join token on the first host
   shell: |
-    kubeadm token generate
+    kubeadm token generate | tee /tmp/kubeadm_token
   register: kubeadm_token
 
 - name: Generate a kubeadm certificate key on the first host
   shell: |
-    kubeadm alpha certs certificate-key
+    kubeadm certs certificate-key | tee /tmp/kubeadm_cert_key
   register: kubeadm_cert_key
 
 - name: Register dummy host with variables from kubeadm
@@ -25,6 +25,7 @@
       --skip-certificate-key-print \
       --skip-token-print \
       --upload-certs \
+      --feature-gates IPv6DualStack=false \
       --token {{ hostvars['KUBEADM']['kubeadm_token'] }} \
       --certificate-key {{ hostvars['KUBEADM']['kubeadm_cert_key'] }}
 
@@ -61,6 +62,15 @@
     get pods --all-namespaces \
     -o custom-columns=NAMESPACE:.metadata.namespace,NAME:.metadata.name,HOSTNETWORK:.spec.hostNetwork --no-headers=true | \
     grep '<none>' | awk '{print "-n "$1" "$2}' | xargs -L 1 -r kubectl --kubeconfig /etc/kubernetes/admin.conf delete pod
+
+- name: Wait again for kube-system pods to be ready
+  shell: |
+    kubectl --kubeconfig /etc/kubernetes/admin.conf \
+    -n kube-system \
+    wait \
+    --for=condition=Ready \
+    pod -l k8s-app=kube-dns \
+    --timeout=10m
 
 # - name: Wait again for cilium pods to be ready
 #   shell: |
