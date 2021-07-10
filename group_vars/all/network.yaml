@@ -8,6 +8,9 @@ vip_kube_apiserver_port: 8443
 
 kube_apiserver_port: 6443
 
+ingress_service_nodeport_http_port: 30680
+ingress_service_nodeport_https_port: 31043
+
 keepalived_pass: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           66666361363336393636346138303266323033336638653933616663313966356634656565646662
