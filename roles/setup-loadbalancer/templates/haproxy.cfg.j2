@@ -36,6 +36,7 @@ frontend apiserver
     bind *:{{ vip_kube_apiserver_port }}
     mode tcp
     option tcplog
+    tcp-request content accept if { req.ssl_hello_type 1 }
     default_backend apiserver
 
 #---------------------------------------------------------------------
@@ -49,4 +50,29 @@ backend apiserver
     balance     roundrobin
         {% for hostname in groups['all'] -%}
         server {{ hostvars[hostname].inventory_hostname_short }} {{ hostvars[hostname].private_ip }}:{{ kube_apiserver_port }} check
+        {% endfor %}
+
+frontend ingress_http
+    bind *:80
+    mode tcp
+    default_backend ingress_backend_http
+
+backend ingress_backend_http
+    mode tcp
+    balance     roundrobin
+        {% for hostname in groups['all'] -%}
+        server {{ hostvars[hostname].inventory_hostname_short }} {{ hostvars[hostname].private_ip }}:{{ ingress_service_nodeport_http_port }} check send-proxy
+        {% endfor %}
+
+frontend ingress_https
+    bind *:443
+    mode tcp
+    tcp-request content accept if { req.ssl_hello_type 1 }
+    default_backend ingress_backend_https
+
+backend ingress_backend_https
+    mode tcp
+    balance     roundrobin
+        {% for hostname in groups['all'] -%}
+        server {{ hostvars[hostname].inventory_hostname_short }} {{ hostvars[hostname].private_ip }}:{{ ingress_service_nodeport_https_port }} check send-proxy
         {% endfor %}

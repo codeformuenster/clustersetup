@@ -1,11 +1,15 @@
 ---
 # vip = Virtual IP
 keepalived_vip: 45.12.171.150
+keepalived_vip_v6: "2001:7c7:1704:fe::150"
 
 vip_kube_apiserver_name: kube.vsh.codeformuenster.org
 vip_kube_apiserver_port: 8443
 
 kube_apiserver_port: 6443
+
+ingress_service_nodeport_http_port: 30680
+ingress_service_nodeport_https_port: 31043
 
 keepalived_pass: !vault |
           $ANSIBLE_VAULT;1.1;AES256
@@ -15,4 +19,4 @@ keepalived_pass: !vault |
           6234656661356364640a333464323430303530616331363461616639303664336461653434616338
           3962
 
-cilium_version: "1.9.0-rc2"
+cilium_version: "1.10.0"

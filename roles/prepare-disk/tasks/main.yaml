@@ -1,0 +1,20 @@
+---
+- name: Create longhorn partition
+  shell:  echo -e "o\nn\np\n1\n\n\nw" | fdisk {{ longhorn_disk }} && touch /longhorn_partition_created
+  args:
+    creates: /longhorn_partition_created
+
+- name: Setup ext4 in longhorn partition
+  filesystem:
+    fstype: ext4
+    dev: "{{ longhorn_disk_partition }}"
+
+- name: Mount longhorn disk
+  ansible.posix.mount:
+    state: mounted
+    fstype: ext4
+    opts: defaults,noatime,discard
+    src: "{{ longhorn_disk_partition }}"
+    name: "{{ longhorn_disk_mountpoint }}"
+    dump: "0"
+    passno: "0"
