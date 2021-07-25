@@ -9,7 +9,7 @@
     fstype: ext4
     dev: "{{ longhorn_disk_partition }}"
 
-- name: Mount xfs disk
+- name: Mount longhorn disk
   ansible.posix.mount:
     state: mounted
     fstype: ext4
