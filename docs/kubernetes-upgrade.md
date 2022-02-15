@@ -42,7 +42,7 @@ Execute these steps for each node. Do not execute anything in parallel and check
 
 - Drain the node (We're running in High-Availibilty mode with no workers)
 
-      kubectl drain <node-to-drain> --ignore-daemonsets
+      kubectl drain <node-to-drain> --ignore-daemonsets --delete-emptydir-data
 
 - Either restart only the kubelet or the whole node
 
@@ -74,10 +74,9 @@ Execute these steps for each node. Do not execute anything in parallel and check
 
 - Drain the node (We're running in High-Availibilty mode with no workers)
 
-      kubectl drain <node-to-drain> --ignore-daemonsets
+      kubectl drain <node-to-drain> --ignore-daemonsets --delete-emptydir-data
 
-- Either restart only the kubelet or the whole node
-
+- Either restart only the kubelet or the whole node. (This is also a good time to `apt update && apt upgrade -y`)
 
       sudo systemctl daemon-reload
       sudo systemctl restart kubelet
