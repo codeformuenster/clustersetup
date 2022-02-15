@@ -1,7 +1,7 @@
 ---
-docker_version: 5:20.10.7~3-0~ubuntu-focal
-docker_cli_version: 5:20.10.7~3-0~ubuntu-focal
-containerd_version: 1.4.8-1
-kubeadm_version: 1.21.3-00
-kubelet_version: 1.21.3-00
-helm_version: 3.6.3-1
+docker_version: 5:20.10.12~3-0~ubuntu-focal
+docker_cli_version: 5:20.10.12~3-0~ubuntu-focal
+containerd_version: 1.4.12-1
+kubeadm_version: 1.21.9-00
+kubelet_version: 1.21.9-00
+helm_version: 3.8.0-1

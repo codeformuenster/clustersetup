@@ -6,6 +6,8 @@ Hobbyist bare metal kubernetes cluster setup using ansible. Used for serving som
 
 Directory `keys` should contain a ssh key for accessing your nodes through ssh.
 
+You'll also need a `keys/known_hosts` file populated by `ssh-keyscan -t ed25519 <inventory-hostname-1> [... inventory-hostname-2 ... inventory-host-name-n] | tee keys/known_hosts`
+
 You also should have the `vault-id` password for encrypted values in the root directory of this repository.
 
 For nodes, Ubuntu 20.04 LTS is used
